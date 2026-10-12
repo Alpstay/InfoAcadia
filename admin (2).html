@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Directory · Back office</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Belleza&family=Lato:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+:root{ --bg:#ffffff; --ink:#111111; --muted:#6a655c; --gold:#b08a3e; --gold-deep:#8a6a2a; --gold-soft:#f6f1e6; --line:#e4dccb; --card:#ffffff; --blue:#6f7d68; --blue-deep:#55624f; --blue-soft:#eef1ec; --ok:#3d7a3d; --err:#a63d3d; --side:#faf8f3; }
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Lato,"Helvetica Neue",Arial,sans-serif}
+h1,h2,h3{font-family:Belleza,Georgia,serif;font-weight:400;margin:0}
+button{font:inherit;cursor:pointer}
+input,textarea,select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%}
+input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+textarea{resize:vertical;font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;tab-size:2}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font-weight:700}
+.btn:hover{border-color:var(--gold)}
+.btn.primary{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn.primary:disabled{opacity:.45;cursor:default}
+.btn.ghost{border-color:transparent;color:var(--muted);font-weight:400}
+.btn.sm{padding:5px 11px;font-size:.85rem;font-weight:400}
+.hidden{display:none !important}
+
+/* login */
+.login{min-height:100%;display:grid;place-items:center;padding:24px;background:var(--side)}
+.login .card{width:min(380px,100%);background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px}
+.login h1{font-size:1.8rem;line-height:1.1}
+.login h1 small{display:block;font:.7rem/1.4 Lato,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin-top:4px}
+.login label{display:block;font-size:.85rem;color:var(--muted);margin:14px 0 4px}
+.login .btn{width:100%;justify-content:center;margin-top:18px}
+.msg{font-size:.9rem;margin-top:12px;min-height:1.3em}
+.msg.err{color:var(--err)} .msg.ok{color:var(--ok)}
+
+/* app */
+.app{height:100%;display:grid;grid-template-rows:auto 1fr;}
+.top{display:flex;align-items:center;gap:14px;padding:10px 18px;border-bottom:1px solid var(--line);background:var(--bg);position:sticky;top:0;z-index:5}
+.top h1{font-size:1.35rem}
+.top h1 small{font:.68rem/1 Lato,Arial,sans-serif;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-deep);margin-left:10px}
+.top .site{width:auto;padding:6px 30px 6px 12px;border-radius:999px;font-size:.9rem}
+.top .spacer{flex:1}
+.top .status{font-size:.85rem;color:var(--muted)}
+.dirty{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gold);margin-right:6px;vertical-align:middle}
+.main{display:grid;grid-template-columns:260px 1fr 1fr;min-height:0}
+.side{background:var(--side);border-right:1px solid var(--line);overflow:auto;padding:12px 0}
+.side h2{font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);padding:14px 18px 6px;font-family:Lato,Arial,sans-serif;font-weight:700}
+.side button{display:block;width:100%;text-align:left;padding:9px 18px;border:0;background:none;color:var(--ink);border-left:3px solid transparent}
+.side button.sub{padding-left:34px;font-size:.92rem;color:var(--muted)}
+.side button:hover{background:var(--gold-soft)}
+.side button.on{background:var(--bg);border-left-color:var(--gold);font-weight:700;color:var(--ink)}
+.side button .tag{float:right;font-size:.7rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-top:4px}
+.edit{overflow:auto;padding:22px 24px;border-right:1px solid var(--line)}
+.edit h2{font-size:1.6rem}
+.edit .path{font-size:.8rem;color:var(--muted);margin-bottom:16px}
+.field{margin:14px 0}
+.field label{display:block;font-size:.82rem;color:var(--muted);margin-bottom:4px}
+.field .help{font-size:.8rem;color:var(--muted);margin-top:4px}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 8px}
+.note{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--gold-soft);font-size:.9rem;margin:14px 0}
+.chips-edit textarea{font-family:Lato,Arial,sans-serif;font-size:15px}
+.preview{overflow:auto;background:#eee9df;padding:22px}
+.phone{max-width:420px;margin:0 auto;background:var(--bg);border:1px solid var(--line);border-radius:26px;padding:22px 18px 40px;min-height:600px;box-shadow:0 10px 30px rgba(0,0,0,.08)}
+.phone .ptitle{font-family:Belleza,Georgia,serif;font-size:1.9rem;line-height:1.05}
+.phone .plead{color:var(--muted);margin:6px 0 10px}
+.phone .soon{padding:22px;border:1px dashed var(--line);border-radius:14px;text-align:center;color:var(--muted)}
+/* stessi stili della directory, per l'anteprima */
+.phone .block{padding:16px 18px;border:1px solid var(--line);border-radius:14px;margin:12px 0}
+.phone .block h3{font-family:Belleza,Georgia,serif;font-size:1.15rem;color:var(--gold);margin-bottom:6px}
+.phone .block p{margin:4px 0}
+.phone .block ul{margin:6px 0 0;padding-left:18px}
+.phone .row{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.phone .row:last-child{border-bottom:0}
+.phone .row span:last-child{color:var(--muted);text-align:right}
+.phone .row code{font:inherit;font-weight:700;background:var(--gold-soft);border:1px solid var(--line);border-radius:6px;padding:1px 7px}
+.phone .cta{display:inline-block;margin:10px 6px 0 0;padding:10px 16px;background:var(--gold);color:#fff;border-radius:999px;text-decoration:none;font-weight:700;border:0}
+.phone .hint{font-size:.85rem;color:var(--muted);margin-top:8px}
+.phone .field{display:flex;flex-direction:column;gap:4px;margin:10px 0}
+.phone a{color:var(--gold-deep)}
+.phone .fact{margin-top:10px;padding:12px 14px;background:var(--blue-soft);border-radius:12px;font-size:.95rem}
+.sort{list-style:none;margin:8px 0 0;padding:0}
+.sort li{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);margin-bottom:8px;cursor:grab}
+.sort li.drag{opacity:.4}
+.sort li.over{border-color:var(--gold);box-shadow:0 0 0 2px var(--gold-soft)}
+.sort li.off{opacity:.55;background:var(--side)}
+.sort .grip{color:var(--muted);font-size:1.1rem;text-align:center;user-select:none}
+.sort .info b{display:block}
+.sort .info small{color:var(--muted)}
+.sort .info input{margin-top:6px;padding:6px 10px;font-size:.9rem}
+.sort .acts{display:flex;gap:4px}
+.sort .acts button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 8px;font-size:.85rem}
+.sort .acts button:hover{border-color:var(--gold)}
+.sort h4{font:.72rem/1 Lato,Arial,sans-serif;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-deep);margin:18px 0 8px}
+.hist{padding:12px 18px;border-top:1px solid var(--line)}
+.hist ul{list-style:none;margin:8px 0 0;padding:0;font-size:.85rem}
+.hist li{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:.9rem;opacity:0;transition:opacity .2s;pointer-events:none}
+.toast.on{opacity:1}
+@media (max-width:1100px){ .main{grid-template-columns:230px 1fr} .preview{display:none} .preview.mobile-on{display:block;grid-column:1/-1} }
+@media (max-width:760px){ .main{grid-template-columns:1fr} .side{max-height:38vh;border-right:0;border-bottom:1px solid var(--line)} .edit{border-right:0} }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="login">
+  <form class="card" id="loginForm">
+    <h1>Directory ospiti<small>Back office AlpStay</small></h1>
+    <label for="u">Utente</label><input id="u" autocomplete="username" required>
+    <label for="p">Password</label><input id="p" type="password" autocomplete="current-password" required>
+    <label for="apiUrl">Indirizzo del servizio</label><input id="apiUrl" placeholder="https://alpstay-directory.xxx.workers.dev">
+    <div class="help" style="font-size:.8rem;color:var(--muted);margin-top:4px">Lascia vuoto per la <b>modalità prova</b>: le modifiche restano solo in questo browser.</div>
+    <button class="btn primary" type="submit">Entra</button>
+    <div class="msg" id="loginMsg"></div>
+  </form>
+</div>
+
+<!-- APP -->
+<div class="app hidden" id="app">
+  <header class="top">
+    <h1>Directory ospiti<small>Back office</small></h1>
+    <select class="site" id="site"><option value="acadia">Acadia Mountain Home</option><option value="saslong">Smart Hotel Saslong</option><option value="hartmann">Hartmann Mountain Chalet</option></select>
+    <span class="spacer"></span>
+    <span class="status" id="status"></span>
+    <button class="btn" id="btnImport" type="button" title="Carica i testi di partenza da un file JSON">Importa JSON</button>
+    <input type="file" id="fileImport" accept="application/json" class="hidden">
+    <button class="btn primary" id="btnSave" type="button" disabled>Salva e pubblica</button>
+    <button class="btn ghost" id="btnLogout" type="button">Esci</button>
+  </header>
+
+  <div class="main">
+    <nav class="side" id="side"></nav>
+
+    <section class="edit" id="edit"></section>
+
+    <aside class="preview" id="preview"><div class="phone" id="phone"></div></aside>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ================= STATO ================= */
+const LS_URL = 'alpstay.directory.api';
+const SS_AUTH = 'alpstay.directory.auth';   // sessionStorage: sparisce alla chiusura della scheda
+const SS_SITE = 'alpstay.directory.site';
+
+let API = localStorage.getItem(LS_URL) || '';
+let AUTH = sessionStorage.getItem(SS_AUTH) || '';
+let SITE = sessionStorage.getItem(SS_SITE) || 'acadia';
+let content = null;        // DirectoryContent corrente (modificato in memoria)
+let meta = {};             // dynamic/hasMenu/parent per sezione (dal seed)
+let current = 'fact';      // sezione aperta
+let dirty = false;
+
+/* Ordine e raggruppamento del menu laterale: chiavi non elencate finiscono in "Altro" */
+const GROUPS = [
+  {g:'Home', keys:['menu','quick','fact','chips','wa']},
+  {g:'L\'hotel', keys:['assist','hotel','hotel/orari','hotel/stanza','hotel/stanza/temperatura','hotel/stanza/tv','hotel/stanza/smarttv','hotel/stanza/cassaforte','hotel/stanza/wifi','hotel/stanza/minibar','hotel/stanza/keycard','hotel/stanza/checkout','hotel/servizi','hotel/mobilita','hotel/rispetto','hotel/emergenze','bistrot','shop','contact']},
+  {g:'Sci e valle', keys:['skipass','valgardena','secret','social','pressreader','guida']},
+  {g:'Note legali', keys:['impressum','privacy']},
+];
+const SPECIAL = {
+  menu:  {title:'Ordine del menu', help:'Trascina i riquadri della home nell\'ordine che vuoi (o usa ▲ ▼). Puoi cambiare gruppo e sottotitolo, e nascondere una voce senza cancellarla.'},
+  quick: {title:'Pulsanti rapidi', help:'I quattro pulsanti sotto il benvenuto: ordine e visibilità.'},
+  fact:  {title:'Lo sapevi…', help:'Il riquadro sotto il benvenuto in home. HTML consentito (grassetto con <b>…</b>).'},
+  chips: {title:'Domande rapide', help:'Le domande suggerite sotto la chat "Come posso aiutarti?". Una per riga.'},
+  wa:    {title:'Numero WhatsApp', help:'Solo cifre con prefisso internazionale, es. 393336828717. Vale per tutti i pulsanti "Scrivici su WhatsApp" e per il termostato.'},
+};
+
+/* ================= API ================= */
+/* Modalità prova: nessun Worker, tutto resta nel localStorage di questo browser. Serve solo per provare il back office. */
+const DEMO_USER = 'alpstay', DEMO_PASS = 'admin1234';
+let DEMO = false;
+const demoKey = k => 'alpstay.directory.demo.' + SITE + '.' + k;
+async function demoApi(path, opt = {}){
+  const method = opt.method || 'GET';
+  const [, , sub, n] = path.split('/');
+  const read = k => { try{ return JSON.parse(localStorage.getItem(demoKey(k))); }catch(e){ return null; } };
+  const write = (k, v) => localStorage.setItem(demoKey(k), JSON.stringify(v));
+  if(sub === 'login'){ if(AUTH !== btoa(DEMO_USER + ':' + DEMO_PASS)) throw new Error('Credenziali non valide'); return null; }
+  if(method === 'GET' && !sub) return read('content') || {site:SITE, updatedAt:null, fact:'', chips:[], wa:'', sections:{}};
+  if(method === 'PUT'){ const prev = read('content'); const hist = read('history') || []; if(prev){ hist.unshift({savedAt:prev.updatedAt, content:prev}); write('history', hist.slice(0, 20)); }
+    const next = {...JSON.parse(opt.body), site:SITE, updatedAt:new Date().toISOString()}; write('content', next); return {ok:true, updatedAt:next.updatedAt}; }
+  if(sub === 'history') return (read('history') || []).map((h, i) => ({index:i, savedAt:h.savedAt}));
+  if(sub === 'restore'){ const hist = read('history') || []; const e = hist[+n]; if(!e) throw new Error('Versione non trovata'); return demoApi('/' + SITE, {method:'PUT', body:JSON.stringify(e.content)}); }
+  throw new Error('non supportato in modalità prova');
+}
+async function api(path, opt = {}){
+  if(DEMO) return demoApi(path, opt);
+  const r = await fetch(API.replace(/\/$/, '') + path, {
+    ...opt,
+    headers: {'Content-Type':'application/json', ...(AUTH ? {Authorization:'Basic ' + AUTH} : {}), ...(opt.headers || {})},
+    cache: 'no-store',
+  });
+  if(r.status === 401) throw new Error('Credenziali non valide');
+  if(!r.ok){ let m = r.statusText; try{ m = (await r.json()).error || m; }catch(e){} throw new Error(m); }
+  return r.status === 204 ? null : r.json();
+}
+
+/* ================= LOGIN ================= */
+const $ = id => document.getElementById(id);
+$('apiUrl').value = API;
+$('loginForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('loginMsg'); msg.className = 'msg'; msg.textContent = 'Verifico…';
+  API = $('apiUrl').value.trim();
+  DEMO = !API;
+  if(!DEMO && !/^https?:\/\//.test(API)){ msg.className = 'msg err'; msg.textContent = 'Inserisci l\'indirizzo del servizio (workers.dev) o lascia vuoto per la modalità prova.'; return; }
+  AUTH = btoa($('u').value.trim() + ':' + $('p').value);
+  try{
+    await api('/' + SITE + '/login', {method:'POST'});
+    localStorage.setItem(LS_URL, API); sessionStorage.setItem(SS_AUTH, AUTH); sessionStorage.setItem('alpstay.directory.demo', DEMO ? '1' : '');
+    $('p').value = '';
+    enter();
+  }catch(err){ AUTH = ''; msg.className = 'msg err'; msg.textContent = err.message; }
+});
+$('btnLogout').addEventListener('click', () => { if(dirty && !confirm('Ci sono modifiche non salvate. Uscire comunque?')) return; sessionStorage.removeItem(SS_AUTH); location.reload(); });
+DEMO = sessionStorage.getItem('alpstay.directory.demo') === '1';
+if(AUTH && (API || DEMO)) enter();
+
+async function enter(){
+  $('login').classList.add('hidden'); $('app').classList.remove('hidden');
+  $('site').value = SITE;
+  if(DEMO){ const b = document.createElement('span'); b.className = 'status'; b.style.cssText = 'background:var(--gold-soft);border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--gold-deep)'; b.textContent = 'Modalità prova'; $('status').before(b); }
+  await loadSite();
+}
+$('site').addEventListener('change', async () => {
+  if(dirty && !confirm('Ci sono modifiche non salvate. Cambiare struttura comunque?')){ $('site').value = SITE; return; }
+  SITE = $('site').value; sessionStorage.setItem(SS_SITE, SITE); await loadSite();
+});
+
+/* ================= CARICAMENTO ================= */
+async function loadSite(){
+  setStatus('Carico…');
+  try{
+    content = await api('/' + SITE);
+  }catch(err){ setStatus('Errore: ' + err.message); toast(err.message); return; }
+  meta = {};
+  // il seed accanto a questo file dice quali sezioni sono dinamiche o con sotto-menu
+  let seed = null;
+  if(typeof EMBEDDED_SEED !== 'undefined' && EMBEDDED_SEED[SITE]) seed = EMBEDDED_SEED[SITE];
+  else { try{ const r = await fetch('content-' + SITE + '.json', {cache:'no-store'}); if(r.ok) seed = await r.json(); }catch(e){} }
+  if(seed) for(const [k, v] of Object.entries(seed.sections || {})) meta[k] = {dynamic:!!v.dynamic, hasMenu:!!v.hasMenu, parent:v.parent || ''};
+  meta.menuTitles = {}; meta.quickTitles = {};
+  if(seed){ (seed.menu || []).forEach(m => meta.menuTitles[m.id] = m); (seed.quick || []).forEach(q => meta.quickTitles[q.id] = q); }
+  if(content && seed){
+    // voci presenti nella pagina ma non ancora nel salvataggio: in coda, così compaiono nel back office
+    const mIds = new Set((content.menu || []).map(m => m.id));
+    content.menu = [...(content.menu || []), ...(seed.menu || []).filter(m => !mIds.has(m.id)).map(m => ({id:m.id, g:m.g, sub:m.sub, hidden:false}))];
+    const qIds = new Set((content.quick || []).map(q => q.id));
+    content.quick = [...(content.quick || []), ...(seed.quick || []).filter(q => !qIds.has(q.id)).map(q => ({id:q.id, hidden:false}))];
+  }
+  if(!content.updatedAt && !Object.keys(content.sections || {}).length){
+    if(seed){ applySeed(seed); setStatus('Testi di partenza caricati dal file: salva per pubblicarli'); markDirty(true); }
+    else setStatus('Nessun contenuto salvato: importa il JSON di partenza');
+  } else {
+    setStatus('Ultimo salvataggio: ' + fmt(content.updatedAt));
+    markDirty(false);
+  }
+  current = 'fact';
+  renderSide(); renderEdit(); loadHistory();
+}
+function applySeed(seed){
+  content = {site:SITE, updatedAt:null, fact:seed.fact || '', chips:seed.chips || [], wa:seed.wa || '', sections:{}, menu:(seed.menu || []).map(m => ({...m})), quick:(seed.quick || []).map(q => ({...q}))};
+  for(const [k, v] of Object.entries(seed.sections || {})){
+    content.sections[k] = {title:v.title || '', lead:v.lead || '', html:v.html || ''};
+    meta[k] = {dynamic:!!v.dynamic, hasMenu:!!v.hasMenu, parent:v.parent || ''};
+  }
+}
+$('btnImport').addEventListener('click', () => $('fileImport').click());
+$('fileImport').addEventListener('change', async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{ const seed = JSON.parse(await f.text()); if(!seed.sections) throw new Error('formato non riconosciuto'); applySeed(seed); markDirty(true); renderSide(); renderEdit(); toast('Testi importati: ricorda di salvare'); }
+  catch(err){ toast('Import fallito: ' + err.message); }
+  e.target.value = '';
+});
+
+/* ================= MENU LATERALE ================= */
+function label(k){
+  if(SPECIAL[k]) return SPECIAL[k].title;
+  const s = content.sections[k]; return s ? s.title : k;
+}
+function renderSide(){
+  const listed = new Set(GROUPS.flatMap(g => g.keys));
+  const extra = Object.keys(content.sections).filter(k => !listed.has(k));
+  const groups = extra.length ? [...GROUPS, {g:'Altro', keys:extra}] : GROUPS;
+  $('side').innerHTML = groups.map(g => {
+    const items = g.keys.filter(k => SPECIAL[k] || content.sections[k]);
+    if(!items.length) return '';
+    return `<h2>${g.g}</h2>` + items.map(k => {
+      const m = meta[k] || {};
+      const sub = k.includes('/') ? ' sub' : '';
+      const tag = m.dynamic ? '<span class="tag">dinamica</span>' : (m.hasMenu ? '<span class="tag">menu</span>' : '');
+      return `<button type="button" data-k="${k}" class="${k===current?'on':''}${sub}">${esc(label(k))}${tag}</button>`;
+    }).join('');
+  }).join('');
+}
+$('side').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if(!b) return; current = b.dataset.k; renderSide(); renderEdit(); });
+
+/* ================= EDITOR ================= */
+function renderEdit(){
+  const ed = $('edit');
+  if(SPECIAL[current]){
+    const sp = SPECIAL[current];
+    let field;
+    if(current === 'fact') field = `<div class="field"><label>Testo</label><textarea id="f-fact" rows="5">${esc(content.fact)}</textarea></div>`;
+    if(current === 'chips') field = `<div class="field chips-edit"><label>Domande (una per riga)</label><textarea id="f-chips" rows="10">${esc(content.chips.join('\n'))}</textarea></div>`;
+    if(current === 'wa') field = `<div class="field"><label>Numero</label><input id="f-wa" value="${esc(content.wa)}" inputmode="numeric"></div>`;
+    if(current === 'menu') field = sortableHtml('menu');
+    if(current === 'quick') field = sortableHtml('quick');
+    ed.innerHTML = `<h2>${sp.title}</h2><div class="path">Home</div><div class="note">${sp.help}</div>${field}`;
+    if(current === 'menu' || current === 'quick') bindSortable(current);
+  } else {
+    const s = content.sections[current]; const m = meta[current] || {};
+    ed.innerHTML = `
+      <h2>${esc(s.title)}</h2><div class="path">${current}${m.parent ? ' · dentro "' + esc(label(m.parent)) + '"' : ''}</div>
+      ${m.dynamic ? '<div class="note">Sezione con funzioni interattive (termostato, shop, chat, audioguida…): da qui si cambiano solo titolo e sottotitolo. Il contenuto è nel codice della pagina.</div>' : ''}
+      ${m.hasMenu ? '<div class="note">Questa sezione ha un sotto-menu: il contenuto qui sotto compare sopra le voci del menu.</div>' : ''}
+      <div class="field"><label>Titolo</label><input id="f-title" value="${esc(s.title)}"></div>
+      <div class="field"><label>Sottotitolo</label><input id="f-lead" value="${esc(s.lead)}"></div>
+      ${m.dynamic ? '' : `
+      <div class="field"><label>Contenuto (HTML)</label>
+        <div class="tools">
+          <button class="btn sm" type="button" data-snip="block">+ Blocco</button>
+          <button class="btn sm" type="button" data-snip="row">+ Riga (voce · valore)</button>
+          <button class="btn sm" type="button" data-snip="p">+ Paragrafo</button>
+          <button class="btn sm" type="button" data-snip="ul">+ Elenco</button>
+          <button class="btn sm" type="button" data-snip="tel">+ Numero da chiamare</button>
+          <button class="btn sm" type="button" data-snip="link">+ Pulsante link</button>
+          <button class="btn sm" type="button" data-snip="wa">+ Pulsante WhatsApp</button>
+          <button class="btn sm" type="button" data-snip="go">+ Pulsante a sezione</button>
+        </div>
+        <textarea id="f-html" rows="22" spellcheck="false">${esc(s.html)}</textarea>
+        <div class="help">Vuoto = nella directory compare "Contenuto in arrivo". L'anteprima a destra si aggiorna mentre scrivi.</div>
+      </div>`}`;
+  }
+  ed.querySelectorAll('input,textarea').forEach(el => el.addEventListener('input', onInput));
+  renderPreview();
+}
+function onInput(){
+  if(SPECIAL[current]){
+    if(current === 'fact') content.fact = $('f-fact').value;
+    if(current === 'chips') content.chips = $('f-chips').value.split('\n').map(x => x.trim()).filter(Boolean);
+    if(current === 'wa') content.wa = $('f-wa').value.replace(/\D/g, '');
+  } else {
+    const s = content.sections[current];
+    s.title = $('f-title').value; s.lead = $('f-lead').value;
+    const h = $('f-html'); if(h) s.html = h.value;
+    const b = $('side').querySelector(`[data-k="${CSS.escape(current)}"]`); if(b) b.firstChild.textContent = s.title || current;
+  }
+  markDirty(true); renderPreview();
+}
+const SNIPPETS = {
+  block: `<div class="block"><h3>Titolo del blocco</h3>\n  <p>Testo…</p></div>\n`,
+  row:   `  <div class="row"><span>Voce</span><span>Valore</span></div>\n`,
+  p:     `  <p>Testo…</p>\n`,
+  ul:    `  <ul><li>Prima voce</li><li>Seconda voce</li></ul>\n`,
+  tel:   `  <div class="row"><span>Reception</span><span><a href="tel:+390471000000">+39 0471 000000</a></span></div>\n`,
+  link:  `  <a class="cta" href="https://" target="_blank" rel="noopener">Apri</a>\n`,
+  wa:    () => `  <a class="cta" href="https://api.whatsapp.com/send?phone=${content.wa}&text=${encodeURIComponent('Ciao, gradisco informazioni su …')}" target="_blank" rel="noopener">Scrivici su WhatsApp</a>\n`,
+  go:    `  <button class="cta" type="button" data-go="contact">Contatta la reception</button>\n`,
+};
+$('edit').addEventListener('click', e => {
+  const b = e.target.closest('[data-snip]'); if(!b) return;
+  const ta = $('f-html'); if(!ta) return;
+  const sn = SNIPPETS[b.dataset.snip]; const text = typeof sn === 'function' ? sn() : sn;
+  const st = ta.selectionStart, en = ta.selectionEnd;
+  ta.value = ta.value.slice(0, st) + text + ta.value.slice(en);
+  ta.selectionStart = ta.selectionEnd = st + text.length; ta.focus(); onInput();
+});
+
+/* ================= ORDINE (drag & drop) ================= */
+function sortableHtml(kind){
+  const arr = content[kind] || [];
+  const row = (e, i) => {
+    if(kind === 'menu'){
+      const secTitle = label(e.id);
+      return `<li draggable="true" data-i="${i}" class="${e.hidden?'off':''}"><span class="grip">⋮⋮</span>
+        <div class="info"><b>${esc(secTitle)}</b><small>${esc(e.id)}</small>
+          <input data-f="g" value="${esc(e.g)}" placeholder="Gruppo (es. L'Acadia)" aria-label="Gruppo">
+          <input data-f="sub" value="${esc(e.sub)}" placeholder="Sottotitolo nel riquadro" aria-label="Sottotitolo"></div>
+        <div class="acts"><button type="button" data-up title="Su">▲</button><button type="button" data-down title="Giù">▼</button><button type="button" data-hide>${e.hidden?'Mostra':'Nascondi'}</button></div></li>`;
+    }
+    const t = meta.quickTitles[e.id] || {};
+    return `<li draggable="true" data-i="${i}" class="${e.hidden?'off':''}"><span class="grip">⋮⋮</span>
+      <div class="info"><b>${esc(t.title || e.id)}</b><small>${esc(t.sub || '')}</small></div>
+      <div class="acts"><button type="button" data-up title="Su">▲</button><button type="button" data-down title="Giù">▼</button><button type="button" data-hide>${e.hidden?'Mostra':'Nascondi'}</button></div></li>`;
+  };
+  return `<ul class="sort" id="sort-${kind}">${arr.map(row).join('')}</ul>` + (kind === 'menu' ? `<div class="help">I riquadri vengono raggruppati per "Gruppo" nell'ordine in cui compaiono qui.</div>` : '');
+}
+function bindSortable(kind){
+  const ul = $('sort-' + kind); const arr = content[kind];
+  let from = null;
+  const rerender = () => { $('edit').querySelector('.sort').outerHTML = sortableHtml(kind).replace(/<div class="help">.*$/, ''); bindSortable(kind); markDirty(true); renderPreview(); };
+  ul.addEventListener('dragstart', e => { const li = e.target.closest('li'); if(!li) return; from = +li.dataset.i; li.classList.add('drag'); e.dataTransfer.effectAllowed = 'move'; });
+  ul.addEventListener('dragover', e => { e.preventDefault(); const li = e.target.closest('li'); ul.querySelectorAll('li').forEach(x => x.classList.remove('over')); if(li) li.classList.add('over'); });
+  ul.addEventListener('drop', e => { e.preventDefault(); const li = e.target.closest('li'); if(!li || from === null) return; const to = +li.dataset.i; if(to === from) return; const [m] = arr.splice(from, 1); arr.splice(to, 0, m); from = null; rerender(); });
+  ul.addEventListener('dragend', () => { ul.querySelectorAll('li').forEach(x => x.classList.remove('drag', 'over')); from = null; });
+  ul.addEventListener('click', e => {
+    const b = e.target.closest('button'); const li = e.target.closest('li'); if(!b || !li) return; const i = +li.dataset.i;
+    if(b.hasAttribute('data-up') && i > 0){ [arr[i-1], arr[i]] = [arr[i], arr[i-1]]; rerender(); }
+    else if(b.hasAttribute('data-down') && i < arr.length - 1){ [arr[i+1], arr[i]] = [arr[i], arr[i+1]]; rerender(); }
+    else if(b.hasAttribute('data-hide')){ arr[i].hidden = !arr[i].hidden; rerender(); }
+  });
+  ul.addEventListener('input', e => { const inp = e.target.closest('input[data-f]'); const li = e.target.closest('li'); if(!inp || !li) return; arr[+li.dataset.i][inp.dataset.f] = inp.value; markDirty(true); renderPreview(); });
+  ul.querySelectorAll('input').forEach(i => i.addEventListener('mousedown', ev => ev.stopPropagation()));
+  ul.querySelectorAll('input').forEach(i => { i.addEventListener('focus', () => ul.querySelectorAll('li').forEach(l => l.draggable = false)); i.addEventListener('blur', () => ul.querySelectorAll('li').forEach(l => l.draggable = true)); });
+}
+
+/* ================= ANTEPRIMA ================= */
+function renderPreview(){
+  const ph = $('phone');
+  if(current === 'fact'){ ph.innerHTML = `<div class="ptitle">Benvenuto,</div><div class="plead">tutto l'Acadia in una pagina.</div><div class="fact"><b>Lo sapevi…</b><p>${content.fact}</p></div>`; return; }
+  if(current === 'chips'){ ph.innerHTML = `<div class="ptitle">Come posso aiutarti?</div><div class="plead">Domande rapide</div>` + content.chips.map(c => `<span class="cta" style="background:var(--blue-soft);color:var(--ink);font-weight:400">${esc(c)}</span>`).join(''); return; }
+  if(current === 'menu'){
+    const vis = (content.menu || []).filter(m => !m.hidden); const groups = [...new Set(vis.map(m => m.g))];
+    ph.innerHTML = `<div class="ptitle">Home</div>` + groups.map(g => `<div style="font-family:Belleza,Georgia,serif;font-size:1.3rem;margin:14px 0 6px">${esc(g)}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">` +
+      vis.filter(m => m.g === g).map(m => `<div class="block" style="margin:0;padding:12px"><b>${esc(label(m.id))}</b><br><small style="color:var(--muted)">${esc(m.sub)}</small></div>`).join('') + `</div>`).join('');
+    return;
+  }
+  if(current === 'quick'){
+    ph.innerHTML = `<div class="ptitle">Benvenuto,</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px">` +
+      (content.quick || []).filter(q => !q.hidden).map(q => { const t = meta.quickTitles[q.id] || {}; return `<div class="block" style="margin:0;padding:10px 12px;border-radius:999px"><b>${esc(t.title || q.id)}</b><br><small style="color:var(--muted)">${esc(t.sub || '')}</small></div>`; }).join('') + `</div>`;
+    return;
+  }
+  if(current === 'wa'){ ph.innerHTML = `<div class="ptitle">WhatsApp</div><div class="plead">Anteprima del pulsante</div><a class="cta" href="https://api.whatsapp.com/send?phone=${content.wa}" target="_blank" rel="noopener">Scrivici su WhatsApp</a><p class="hint">Numero: ${content.wa || '—'}</p>`; return; }
+  const s = content.sections[current]; const m = meta[current] || {};
+  ph.innerHTML = `<div class="ptitle">${esc(s.title)}</div><div class="plead">${esc(s.lead)}</div>` +
+    (m.dynamic ? `<div class="soon">Contenuto interattivo: vedi la directory pubblicata</div>` :
+     s.html.trim() ? s.html : `<div class="soon"><b>Contenuto in arrivo</b><br>Questa sezione sarà disponibile a breve.</div>`);
+  ph.querySelectorAll('a').forEach(a => { a.addEventListener('click', ev => ev.preventDefault()); });
+}
+
+/* ================= SALVATAGGIO ================= */
+$('btnSave').addEventListener('click', save);
+document.addEventListener('keydown', e => { if((e.metaKey || e.ctrlKey) && e.key === 's'){ e.preventDefault(); if(dirty) save(); } });
+async function save(){
+  const btn = $('btnSave'); btn.disabled = true; btn.textContent = 'Salvo…';
+  try{
+    const r = await api('/' + SITE, {method:'PUT', body: JSON.stringify({fact:content.fact, chips:content.chips, wa:content.wa, sections:content.sections, menu:content.menu || [], quick:content.quick || []})});
+    content.updatedAt = r.updatedAt; markDirty(false); setStatus('Pubblicato: ' + fmt(r.updatedAt)); toast('Pubblicato. La directory si aggiorna al prossimo caricamento.'); loadHistory();
+  }catch(err){ toast('Salvataggio fallito: ' + err.message); markDirty(true); }
+  btn.textContent = 'Salva e pubblica';
+}
+function markDirty(v){ dirty = v; $('btnSave').disabled = !v; }
+window.addEventListener('beforeunload', e => { if(dirty){ e.preventDefault(); e.returnValue = ''; } });
+
+/* ================= CRONOLOGIA ================= */
+async function loadHistory(){
+  let box = $('hist'); if(!box){ box = document.createElement('div'); box.className = 'hist'; box.id = 'hist'; $('side').after(box); }
+  box.innerHTML = '';
+  try{
+    const h = await api('/' + SITE + '/history');
+    if(!h.length) return;
+    box.innerHTML = `<b style="font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-deep)">Versioni precedenti</b><ul>` +
+      h.slice(0, 8).map(x => `<li><span>${fmt(x.savedAt)}</span><button class="btn sm" type="button" data-restore="${x.index}">Ripristina</button></li>`).join('') + `</ul>`;
+    box.querySelector('ul').addEventListener('click', async e => {
+      const b = e.target.closest('[data-restore]'); if(!b) return;
+      if(!confirm('Ripristinare questa versione? Quella attuale finisce in cronologia.')) return;
+      try{ await api('/' + SITE + '/restore/' + b.dataset.restore, {method:'POST'}); toast('Versione ripristinata'); await loadSite(); }
+      catch(err){ toast('Ripristino fallito: ' + err.message); }
+    });
+  }catch(e){}
+}
+// il box cronologia sta sotto il menu laterale: lo sposto dentro
+const _origLoadHistory = loadHistory;
+loadHistory = async function(){ await _origLoadHistory(); const b = $('hist'); if(b && b.parentElement !== $('side')) $('side').appendChild(b); };
+
+/* ================= UTIL ================= */
+function esc(s){ return String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function fmt(iso){ if(!iso) return '—'; const d = new Date(iso); return d.toLocaleDateString('it-IT', {day:'2-digit', month:'2-digit', year:'numeric'}) + ' ' + d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'}); }
+function setStatus(t){ $('status').innerHTML = (dirty ? '<span class="dirty"></span>' : '') + esc(t); }
+let toastT; function toast(t){ const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 3200); }
+</script>
+</body>
+</html>
